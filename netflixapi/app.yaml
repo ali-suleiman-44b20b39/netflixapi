@@ -1,2 +1,2 @@
 runtime: python37
-entrypoint: ./setup.sh
+entrypoint: chmod 755 setup.sh; ./setup.sh
