@@ -1,13 +1,3 @@
-from fastapi import FastAPI
-from typing import Optional
-from typing import Tuple, List
-
-from fastapi import FastAPI
-from pydantic import BaseModel
-from sqlalchemy import create_engine, or_, func
-from sqlalchemy.orm import sessionmaker, Query
-from sqlalchemy.sql import Alias
-
 from basemodels import *
 from functions import *
 from orms import *
