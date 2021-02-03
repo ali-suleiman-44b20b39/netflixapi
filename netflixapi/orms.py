@@ -5,7 +5,7 @@ import csv
 
 from sqlalchemy.orm import sessionmaker, relationship
 
-#SQLALCHEMY_DATABASE_URL = 'sqlite:///:memory:'
+# SQLALCHEMY_DATABASE_URL = 'sqlite:///:memory:'
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
 
@@ -19,17 +19,6 @@ session = SessionLocal()
 Base = declarative_base()
 
 
-class User(Base):
-    __tablename__ = 'userData'
-    id = Column(Integer, Sequence('user_id_seq'), primary_key=True)
-    show_id = Column(String, ForeignKey("showData.show_id"))
-    liked = Column(Boolean)
-    lastStoppingPoint = Column(Integer)
-    lastAccessed = Column(DateTime)
-    completed = Column(Boolean)
-    likedShows = relationship("Show", back_populates="likedBy")
-
-
 class Show(Base):
     __tablename__ = 'showData'
     show_id = Column(Integer, Sequence('show_id_seq'), primary_key=True)
@@ -41,10 +30,9 @@ class Show(Base):
     date_added = Column(String)
     release_year = Column(Integer)
     rating = Column(String)
-    duration = Column(String)
+    duration = Column(Integer)
     listed_in = Column(String)
     description = Column(String)
-    likedBy = relationship("User", back_populates="likedShows")
 
     def __init__(self, type, title, director, cast, country, date_added, release_year, rating, duration,
                  listed_in, description):
@@ -56,9 +44,25 @@ class Show(Base):
         self.date_added = date_added
         self.release_year = release_year
         self.rating = rating
-        self.duration = duration
+        self.duration = self.parseDuration(duration)
+        self.duration_unit = self.getDurationUnit(type)
         self.listed_in = listed_in
         self.description = description
+
+    def parseDuration(self, val):
+        res = ""
+        for c in val:
+            if c not in "0123456789":
+                continue
+            else:
+                res += c
+        return res
+
+    def getDurationUnit(self,type):
+        if type == "Movie":
+            return "Minutes"
+        elif type == "TV Show":
+            return "Seasons"
 
     def toJson(self):
         return {
@@ -77,7 +81,6 @@ class Show(Base):
         }
 
 
-
 def loadData():
     lineCount = 0
     m = 4
@@ -87,18 +90,9 @@ def loadData():
             lineCount += 1
             s = Show(*row[1:])
             session.add(s)
-            #print(s.title)
-
-
 
 
 if __name__ == '__main__':
     loadData()
     Base.metadata.create_all(engine)
     session.commit()
-    print("here")
-    res = session.query(Show).filter_by(type="Movie")[0:5]
-    for val in res:
-        print(val.toJson())
-    print("res:")
-    print(res)

@@ -15,7 +15,7 @@ class Filter(BaseModel):
 
 class SortableField(BaseModel):
     key: str
-    direction: int
+    direction: str
 
 
 class SearchQuery(BaseModel):
