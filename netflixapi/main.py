@@ -105,7 +105,7 @@ async def search(query: SearchQuery):
     q = applyFilters(q, query.filters)
     q = applySearch(q, query.searchTerm)
     q = applySort(q, query.sortableFields)
-    results = applyLimit(q, query.maxPerPage, query.page)
+    results, totalPages = applyLimit(q, query.maxPerPage, query.page)
     summary = applyAggr(q)
     return {"resr": results,
             "summary": summary}

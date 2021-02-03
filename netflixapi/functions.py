@@ -46,14 +46,27 @@ def applySort(q: Query, sortableFields: List[SortableField]) -> Query:
     return q
 
 
-def applyLimit(q: Query, limit: int, page: int) -> List[Show]:
+def applyLimit(q: Query, limit: int, page: int) -> Tuple[List[Show], int]:
+    max = q.count()
+    totalPages = max/limit
     if limit is None:
         return q.all()
+
+    if page * limit + limit > max:
+        upperLimit = None
+    else:
+        upperLimit = page * limit + limit
+
+    if page*limit <= max:
+        lowerLimit = page*limit
+    else:
+        lowerLimit = None
+
     if page is None:
         page = 0
-    q = q[page * limit:page * limit + limit]
+    q = q[lowerLimit:upperLimit]
     print(len(q))
-    return q
+    return q, totalPages
 
 
 def breakDown(q: Query) -> dict:
