@@ -6,10 +6,92 @@ from orms import *
 
 
 
+
+
+Examples = r"""
+
+# Search
+
+### Search Examples:
+
+quotes in search
+```
+{
+  "search_term": "\"cat show\""
+}
+```
+
+search with multiple terms:
+
+```
+{
+  "search_term": "red car"
+}
+```
+
+### Filter Example:
+Search for movies with thunder in the name, where country is canada
+```
+{
+  "search_term": "Thunder",
+  "filters": [
+    {
+      "key": "country",
+      "values": [
+        "Canada"
+      ]
+    }
+  ]
+}
+```
+
+
+
+
+### Sort Example
+Sort by type, then release year descending
+```
+{
+  "search_term":"thunder",
+  "sort_by_fields":[{"key":"type"},{"key":"release_year","direction":"desc"}],
+  "page_size": 50,
+  "page_selected": 1
+}
+```
+
+### Pagination Example
+```
+{
+  "search_term": "thunder",
+  "page_size": 10,
+  "page_selected": 1
+}
+```
+
+### Using all operations together
+```
+{
+  "search_term":"The",
+    "filters": [
+    {
+      "key": "country",
+      "values": [
+        "Mexico"
+      ]
+    }
+  ],
+  "sort_by_fields":[{"key":"type"},{"key":"release_year","direction":"desc"}],
+  "page_size": 50,
+  "page_selected": 1
+}
+```
+
+"""
+
 tags_metadata = [
     {
         "name": "Search",
-        "description": "Search",
+        "description": Examples,
     },
     {
         "name": "Shows",
@@ -103,19 +185,21 @@ session = SessionLocal()
 async def search(query: SearchQuery):
     q = session.query(Show)
     q = applyFilters(q, query.filters)
-    q = applySearch(q, query.searchTerm)
-    q = applySort(q, query.sortableFields)
-    results, totalPages = applyLimit(q, query.maxPerPage, query.page)
+    q = applySearch(q, query.search_term)
+    q = applySort(q, query.sort_by_fields)
+    results, pagination = applyLimit(q, query.page_size, query.page_selected)
     summary = applyAggr(q)
-    return {"resr": results,
-            "summary": summary}
+
+    return {"results": results,
+            "summary": summary,
+            "pagination": pagination }
 
 @app.post("/Shows/", tags=["Shows"])
 async def addShow(show: ShowModel):
-    print(show)
+    # print(show)
     row = show.toList()
-    print(row)
-    print(len(row))
+    # print(row)
+    # print(len(row))
     newShow = Show(*row)
     session.add(newShow)
     session.commit()

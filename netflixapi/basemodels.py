@@ -15,16 +15,16 @@ class Filter(BaseModel):
 
 class SortableField(BaseModel):
     key: str
-    direction: str
+    direction: str = None
 
 
 class SearchQuery(BaseModel):
-    searchTerm: Optional[str] = None
+    search_term: Optional[str] = None
     filters: Optional[List[Filter]] = None
-    sortableFields: Optional[List[SortableField]] = None
+    sort_by_fields: Optional[List[SortableField]] = None
     summaryFields: Optional[List[str]] = None
-    maxPerPage: Optional[int] = 25
-    page: Optional[int] = None
+    page_size: Optional[int] = 25
+    page_selected: Optional[int] = None
 
 
 class UpdateShowModel(BaseModel):
@@ -50,7 +50,7 @@ class ShowModel(BaseModel):
     date_added: str
     release_year: int
     rating: str
-    duration: int
+    duration: str
     listed_in: str
     description: str
 

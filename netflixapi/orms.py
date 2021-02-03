@@ -34,9 +34,9 @@ class Show(Base):
     listed_in = Column(String)
     description = Column(String)
 
-    def __init__(self, type, title, director, cast, country, date_added, release_year, rating, duration,
+    def __init__(self, _type, title, director, cast, country, date_added, release_year, rating, duration,
                  listed_in, description):
-        self.type = type
+        self.type = _type
         self.title = title
         self.director = director
         self.cast = cast
@@ -45,7 +45,7 @@ class Show(Base):
         self.release_year = release_year
         self.rating = rating
         self.duration = self.parseDuration(duration)
-        self.duration_unit = self.getDurationUnit(type)
+        self.duration_unit = self.getDurationUnit(_type)
         self.listed_in = listed_in
         self.description = description
 

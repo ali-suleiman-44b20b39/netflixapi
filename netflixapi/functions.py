@@ -1,3 +1,5 @@
+import time
+
 from fastapi import FastAPI
 from typing import Optional
 from typing import Tuple, List
@@ -12,7 +14,7 @@ import shlex
 from basemodels import *
 from functions import *
 from orms import *
-
+import math
 
 def applyFilters(q: Query, filters: List[Filter]) -> Query:
     if filters is None:
@@ -47,40 +49,60 @@ def applySort(q: Query, sortableFields: List[SortableField]) -> Query:
 
 
 def applyLimit(q: Query, limit: int, page: int) -> Tuple[List[Show], int]:
+
     max = q.count()
-    totalPages = max/limit
     if limit is None:
         return q.all()
+    if page is None:
+        page = 1
+    page = page - 1
+    if limit >= max:
+        limit = max
+    if limit == 0:
+        pagination = {"current_page": 0,
+                      "max_page": 0,
+                      "page_size": 0,
+                      "showing_items": [0,0]}
+        return q.all(), pagination
+    totalPages = math.ceil(max/limit)
 
-    if page * limit + limit > max:
-        upperLimit = None
+    if page * limit + limit >= max:
+        upperLimit = max
     else:
         upperLimit = page * limit + limit
 
     if page*limit <= max:
         lowerLimit = page*limit
     else:
-        lowerLimit = None
+        lowerLimit = 0
 
     if page is None:
         page = 0
     q = q[lowerLimit:upperLimit]
-    print(len(q))
-    return q, totalPages
+    # print(len(q))
+
+    pagination = {"current_page": page+1,
+                  "max_page": totalPages,
+                  "page_size": limit,
+                  "showing_items": [lowerLimit+1,upperLimit]}
+
+    return q, pagination
 
 
 def breakDown(q: Query) -> dict:
-    for attribute in ["type","country"]:
+    for attribute in ["type","rating"]:
         sub = q.order_by(getattr(Show, attribute)).subquery()
         q.group_by()
         total_count = q.count()
         pareto = session.query(attribute, func.count(getattr(sub.c, attribute)),func.count(getattr(sub.c, attribute))/float(total_count)).group_by(getattr(sub.c, attribute))
-        print(pareto.all())
-        print(total_count)
+        # print(pareto.all())
+        # print(total_count)
 
 
 def applyAggr(q: Query) -> dict:
     summary = {}
+    if q.count() == 0:
+        return None
     for attribute in ["release_year", "duration"]:
         sub = q.order_by(getattr(Show, attribute)).subquery()
         count = session.query(func.count(sub.c.title)).first()[0]
@@ -95,10 +117,10 @@ def applyAggr(q: Query) -> dict:
         median = session.query(getattr(sub.c, attribute))[middle:middle + offset]
         if len(median) == 2:
             med = (median[0][0] + median[1][0]) / 2
-            print(f"med/2 {med}")
+            # print(f"med/2 {med}")
         else:
             med = median[0][0]
-            print(f"med  {med}")
+            # print(f"med  {med}")
 
         average = sum / count
         breakDown(q)
