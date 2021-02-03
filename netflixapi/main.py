@@ -117,10 +117,8 @@ tags_metadata = [
 ]
 
 
-description = r"""
 
-<a href='https://github.com/ali-suleiman-44b20b39/netflixapi'>https://github.com/ali-suleiman-44b20b39/netflixapi</a>
-
+"""
 Welcome to netflixapi! This is a quick overview of what this API does from a high level. The detailed documentation can be found here:
 [URL]
 
@@ -177,6 +175,12 @@ This application allows Adding (POST), Removing (DELETE) and Updating Shows (PUT
 * Adding a show, requires all fields to be provided in the request body except for the show_id.
 * Deleting a show, requires the show Id to be provided in the URI.
 * Updating a show, requires the fields to be overwritten in the request body. All excluded fields remain unchanged.
+"""
+
+description = r"""
+
+<a href='https://github.com/ali-suleiman-44b20b39/netflixapi'>https://github.com/ali-suleiman-44b20b39/netflixapi</a>
+
 
 """
 
