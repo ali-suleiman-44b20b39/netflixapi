@@ -56,7 +56,9 @@ class Show(Base):
                 continue
             else:
                 res += c
-        return res
+        if res == "":
+            res = 1
+        return int(res)
 
     def getDurationUnit(self,type):
         if type == "Movie":

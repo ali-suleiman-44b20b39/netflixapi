@@ -124,6 +124,6 @@ def applyAggr(q: Query) -> dict:
 
         average = sum / count
         breakDown(q)
-        summary[attribute] = {"min": min, "max": max, "avg": average, "count": count, "median": med}
+        summary[attribute] = {"min": min, "max": max, "avg": int(average), "count": count, "median": med}
 
     return summary

@@ -46,6 +46,23 @@ Search for movies with thunder in the name, where country is canada
 ```
 
 
+### Summary Stats:
+Currently include summary stats for duration and release year, this is included in all responses. In this example we can see the total number of movies, and some descriptive statistics on the the duration and release year.
+
+```
+{
+  "filters": [
+    {
+      "key": "type",
+      "values": [
+        "Movie"
+      ]
+    }
+  ],
+  "page_size": 1,
+  "page_selected": 1
+}
+```
 
 
 ### Sort Example
